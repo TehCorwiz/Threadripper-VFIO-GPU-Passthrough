@@ -25,11 +25,11 @@ At the base of the stack is the hardware. You generally need two features to set
 
 #### Processor
 
-When Threadripper first dropped there were some irregularities with its virtualization and IOMMU implementations which impeded PCIe passthorugh, however by spring 2018 they appear to have been fixed in all upstream projects and most common Linux Distros. There should now be no outstanding issues with this processor family.
+When Threadripper first dropped there were some irregularities with its virtualization and IOMMU implementations which impeded PCIe passthorugh, however by spring 2018 they appear to have been fixed in most manufacturer BIOS updates, all upstream projects, and most common Linux distros. There should now be no outstanding issues with this processor family.
 
 ### Motherboard
 
-In addition to Athe standard virtualization toggle `TODO: Add screenshot of VT toggle` in UEFI you also need to turn on IOMMU `TODO: Add screenshot of IOMMU toggle`. In my case I also needed to tweak the `TODO: I forgot the optin name, find it and screenshot it` option. This resolved an issue where QEMU would become a zombie process upon VM start and wouldn't produce any debug messages.
+In addition to the standard virtualization toggle `TODO: Add screenshot of VT toggle` in UEFI you also need to turn on IOMMU `TODO: Add screenshot of IOMMU toggle`. In my case I also needed to tweak the `TODO: I forgot the optin name, find it and screenshot it` option. This resolved an issue where QEMU would become a zombie process upon VM start and wouldn't produce any debug messages.
 
 It's important to understand the relationship between your PCI-E slots and IOMMU groups, this varies by manufacturer and there are even some settings in some UEFI that can affect how IOMMU groups come together from PCI-E bus peripherals.
 
@@ -155,3 +155,17 @@ IOMMU
 └── 39
     └── 45:00.2 SATA controller [0106]: Advanced Micro Devices, Inc. [AMD] FCH SATA Controller [AHCI mode] [1022:7901] (rev 51)
 ```
+
+The groups to keep an eye on are: Group 14 (PCI-E slot 4, Guest GPU), Group 13 (All of the on-board peripherals), Group 33 (Guest USB device), and Group 34 (PCI-E slot 1, Host GPU).
+
+## Software
+
+### Linux Kernel
+
+Due to the threadripper specific fixes mentio0ned earlier kernel version 4.15 or later is required. I'm running Fedora 29 and kernel version `4.20.16-200.fc29.x86_64`.
+
+### Virtualization
+
+`sudo dnf install @Virtualization`
+
+
