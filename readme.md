@@ -35,11 +35,11 @@ It's important to understand the relationship between your PCI-E slots and IOMMU
 
 The Taichi has 2 16x PCI-E slots, 2 8x slots, and 1 1x slot. I've populated them as such:
 
-1: (16x) Host GPU (GTX 1060)
-2: (8x) Guest USB
-3: (1x) Empty
-4: (16x) Guest GPU (GTX 1080)
-5: (8x) Empty
+1. (16x) Host GPU (GTX 1060)
+2. (8x) Guest USB
+3. (1x) Empty
+4. (16x) Guest GPU (GTX 1080)
+5. (8x) Empty
 
 Despite the Guest USB card only being a 1x card I was forced to use the 8x slot due to how the IOMMU groups are laid out. As far as I can tell, the four 16x and 8x slots each get their own IOMMU group, while the 1x slot shares IOMMU Group 13 with the other on-board peripherals.
 
