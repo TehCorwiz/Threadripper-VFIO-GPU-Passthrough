@@ -10,7 +10,7 @@ I recently embarked on a quest to switch from dual-booting between Linux and Win
 
 ### Impact
 
-At the base of the stack is the hardware. You generally need two features to setup PCI-E/GPU passthrough: AMD-v (or VT-x on Intel processors) and IOMMU. AMD has broad support for these technologies throughout their Ryzen and Threadripper lines, however beware lower-end motherboards which don't expose the options to enable these features in the BIOS/UEFI. As long as these features are supported you shouldn't have too much trouble.
+At the base of the stack is the hardware. You generally need two features to setup PCIe/GPU passthrough: AMD-v (or VT-x on Intel processors) and IOMMU. AMD has broad support for these technologies throughout their Ryzen and Threadripper lines, however beware lower-end motherboards which don't expose the options to enable these features in the BIOS/UEFI. As long as these features are supported you shouldn't have too much trouble.
 
 ### My Setup
 
@@ -19,7 +19,7 @@ At the base of the stack is the hardware. You generally need two features to set
 * RAM: 16GB G.Skill - Trident Z 16 GB (2 x 8 GB) DDR4-3200
 * Host GPU: EVGA GTX 1060 6GB
 * Guest GPU: MSI GTX 1080 DUKE 8G OC
-* Guest USB: Mailiya PCI-E to Type-C + 5 Port Usb 3.0...blah..blah...here: https://www.amazon.com/gp/product/B01MQ5R7I1/ it's based on the NEC uPD720201 chip which is the important part.
+* Guest USB: Mailiya PCIe to Type-C + 5 Port Usb 3.0...blah..blah...here: https://www.amazon.com/gp/product/B01MQ5R7I1/ it's based on the NEC uPD720201 chip which is the important part.
 * Host HD: Samsung SSD 960 EVO 500GB NVMe
 * Guest HD: Sandisk 256G SSD (SDSSDH2256G)
 
@@ -31,9 +31,9 @@ When Threadripper first dropped there were some irregularities with its virtuali
 
 In addition to the standard virtualization toggle `TODO: Add screenshot of VT toggle` in UEFI you also need to turn on IOMMU `TODO: Add screenshot of IOMMU toggle`. In my case I also needed to tweak the `TODO: I forgot the optin name, find it and screenshot it` option. This resolved an issue where QEMU would become a zombie process upon VM start and wouldn't produce any debug messages.
 
-It's important to understand the relationship between your PCI-E slots and IOMMU groups, this varies by manufacturer and there are even some settings in some UEFI that can affect how IOMMU groups come together from PCI-E bus peripherals.
+It's important to understand the relationship between your PCIe slots and IOMMU groups, this varies by manufacturer and there are even some settings in some UEFI that can affect how IOMMU groups come together from PCIe bus peripherals.
 
-The Taichi has 2 16x PCI-E slots, 2 8x slots, and 1 1x slot. I've populated them as such:
+The Taichi has 2 16x PCIe slots, 2 8x slots, and 1 1x slot. I've populated them as such:
 
 1. (16x) Host GPU (GTX 1060)
 2. (8x) Guest USB
@@ -156,16 +156,33 @@ IOMMU
     └── 45:00.2 SATA controller [0106]: Advanced Micro Devices, Inc. [AMD] FCH SATA Controller [AHCI mode] [1022:7901] (rev 51)
 ```
 
-The groups to keep an eye on are: Group 14 (PCI-E slot 4, Guest GPU), Group 13 (All of the on-board peripherals), Group 33 (Guest USB device), and Group 34 (PCI-E slot 1, Host GPU).
+The groups to keep an eye on are: Group 14 (PCIe slot 4, Guest GPU), Group 13 (All of the on-board peripherals), Group 33 (Guest USB device), and Group 34 (PCIe slot 1, Host GPU).
 
 ## Software
 
 ### Linux Kernel
 
-Due to the threadripper specific fixes mentio0ned earlier kernel version 4.15 or later is required. I'm running Fedora 29 and kernel version `4.20.16-200.fc29.x86_64`.
+Due to the Threadripper specific fixes mentioned earlier kernel version 4.15 or later is required. I'm running Fedora 29 and kernel version `4.20.16-200.fc29.x86_64`.
 
 ### Virtualization
 
+On Fedora 29 getting the software needed is as simple as:
+
 `sudo dnf install @Virtualization`
 
+### System drivers
+
+  Given that I'm using an Nvidia graphics card on the host I chose to continue using the open source `Nouveau` grphics driver as it has better support for Wayland and doesn't have any major performance issues. This choice also makes it easier to ensure that nothing grabs the guest GPU before the `vfio-pci` driver.
+
+## Configuration
+
+Configuration is split into roughly two categories: system config, in which we concern ourselves with isolating the guest hardware using the vfio stub drivers; and vm configuration, where we setup the vm as well as ensure it's using the most efficient CPU, memory and PCIe resources.
+
+### System
+
+`TODO`
+
+### VM
+
+`TODO`
 
