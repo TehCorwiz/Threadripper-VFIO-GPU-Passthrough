@@ -16,6 +16,19 @@ or other application using the libvirt API.
   <memory unit='KiB'>8388608</memory>
   <currentMemory unit='KiB'>8388608</currentMemory>
   <vcpu placement='static'>8</vcpu>
+  <iothreads>1</iothreads>
+  <cputune>
+    <vcpupin vcpu='0' cpuset='0'/>
+    <vcpupin vcpu='1' cpuset='8'/>
+    <vcpupin vcpu='2' cpuset='1'/>
+    <vcpupin vcpu='3' cpuset='9'/>
+    <vcpupin vcpu='4' cpuset='2'/>
+    <vcpupin vcpu='5' cpuset='10'/>
+    <vcpupin vcpu='6' cpuset='3'/>
+    <vcpupin vcpu='7' cpuset='11'/>
+    <emulatorpin cpuset='0-3,8-11'/>
+    <iothreadpin iothread='1' cpuset='0-1'/>
+  </cputune>
   <os>
     <type arch='x86_64' machine='pc-i440fx-3.0'>hvm</type>
     <loader readonly='yes' type='pflash'>/usr/share/OVMF/OVMF_CODE.fd</loader>
@@ -36,8 +49,8 @@ or other application using the libvirt API.
     </kvm>
     <vmport state='off'/>
   </features>
-  <cpu mode='host-model' check='none'>
-    <model fallback='allow'/>
+  <cpu mode='custom' match='exact' check='none'>
+    <model fallback='allow'>EPYC-IBPB</model>
     <topology sockets='1' cores='4' threads='2'/>
   </cpu>
   <clock offset='localtime'>
@@ -75,10 +88,10 @@ or other application using the libvirt API.
       <address type='pci' domain='0x0000' bus='0x00' slot='0x05' function='0x0'/>
     </controller>
     <controller type='pci' index='0' model='pci-root'/>
-    <interface type='network'>
+    <interface type='bridge'>
       <mac address='52:54:00:22:0d:5f'/>
-      <source network='default'/>
-      <model type='e1000e'/>
+      <source bridge='br0'/>
+      <model type='rtl8139'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
     </interface>
     <serial type='pty'>
